@@ -21,7 +21,10 @@ jobs:
       - name: Harden Runner
         uses: step-security/harden-runner@18bf8ad2ca49c14cbb28b91346d626ccfb00c518 # v1
         with:
-          egress-policy: audit
+          disable-sudo: true
+          egress-policy: block
+          allowed-endpoints: >
+            api.github.com:443
 
       - name: Get the release version from the tag
         shell: bash
@@ -47,7 +50,18 @@ jobs:
       - name: Harden Runner
         uses: step-security/harden-runner@18bf8ad2ca49c14cbb28b91346d626ccfb00c518
         with:
-          egress-policy: audit # TODO: change to 'egress-policy: block' after couple of runs
+          egress-policy: block
+          allowed-endpoints: >
+            api.github.com:443
+            cdn03.quay.io:443
+            crates.io:443
+            github.com:443
+            objects.githubusercontent.com:443
+            quay.io:443
+            sh.rustup.rs:443
+            static.crates.io:443
+            static.rust-lang.org:443
+            uploads.github.com:443
 
       - uses: actions/checkout@61b9e3751b92087fd0b06925ba6dd6314e06f089
       - uses: actions/setup-python@d27e3f3d7c64b4bbf8e4abfb9b63b83e846e0435
@@ -55,7 +69,7 @@ jobs:
           python-version: 3.8
           architecture: x64
 
-      - uses: messense/maturin-action@ac0a1ec1c77c445111d044401c7946a0e84eaa0e
+      - uses: messense/maturin-action@7559b9df219c5af54bdf32d57209c26cc1ca05bc
         with:
           manylinux: auto
           command: build
@@ -88,7 +102,7 @@ jobs:
         with:
           python-version: 3.8
 
-      - uses: messense/maturin-action@ac0a1ec1c77c445111d044401c7946a0e84eaa0e
+      - uses: messense/maturin-action@7559b9df219c5af54bdf32d57209c26cc1ca05bc
         env:
           PYO3_PYTHON: python3.8
         with:
@@ -123,7 +137,7 @@ jobs:
           python-version: 3.8
           architecture: x64
 
-      - uses: messense/maturin-action@ac0a1ec1c77c445111d044401c7946a0e84eaa0e
+      - uses: messense/maturin-action@7559b9df219c5af54bdf32d57209c26cc1ca05bc
         env:
           PYO3_PYTHON: python3.8
         with:
@@ -158,7 +172,7 @@ jobs:
   #         name: wheels
 
   #     - name: Publish to PyPI Tests
-  #       uses: messense/maturin-action@ac0a1ec1c77c445111d044401c7946a0e84eaa0e
+  #       uses: messense/maturin-action@7559b9df219c5af54bdf32d57209c26cc1ca05bc
   #       env:
   #         MATURIN_PYPI_TOKEN: ${{ secrets.TEST_PYPI_API_TOKEN }}
   #       with:
@@ -166,7 +180,7 @@ jobs:
   #         args: --repository-url=https://test.pypi.org/legacy/ --skip-existing *
 
   #     - name: Publish to PyPI
-  #       uses: messense/maturin-action@ac0a1ec1c77c445111d044401c7946a0e84eaa0e
+  #       uses: messense/maturin-action@7559b9df219c5af54bdf32d57209c26cc1ca05bc
   #       env:
   #         MATURIN_PYPI_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
   #       with:
