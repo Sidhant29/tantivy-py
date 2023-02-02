@@ -1,24 +1,26 @@
 use std::mem;
 
-use tantivy::tokenizer::{Token, TokenFilter, TokenStream};
 use tantivy::tokenizer::BoxTokenStream;
+use tantivy::tokenizer::{Token, TokenFilter, TokenStream};
 
 // 'OuterPunctuationFilter' removes any leading or trailing punctuations from tokens.
-// 
 // An array of punctuation characters (leading_allow) can be provided
 // to exclude from this filtering process for leading punctuation.
 
 #[derive(Clone)]
-pub struct OuterPunctuationFilter{
-    leading_allow: Vec<char>
+pub struct OuterPunctuationFilter {
+    leading_allow: Vec<char>,
 }
 
 impl TokenFilter for OuterPunctuationFilter {
-    fn transform<'a>(&self, token_stream: BoxTokenStream<'a>) -> BoxTokenStream<'a> {
+    fn transform<'a>(
+        &self,
+        token_stream: BoxTokenStream<'a>,
+    ) -> BoxTokenStream<'a> {
         BoxTokenStream::from(OuterPunctuationFilterTokenStream {
             leading_allow: self.leading_allow.clone(),
             tail: token_stream,
-            buffer: String::with_capacity(100)
+            buffer: String::with_capacity(100),
         })
     }
 }
@@ -42,7 +44,7 @@ pub fn trim_end(text: &str, output: &mut String) {
     output.push_str(text.trim_end_matches(|c: char| !c.is_alphanumeric()));
 }
 
-pub fn trim_start(leading_allow: &Vec<char>, text: &str, output: &mut String){
+pub fn trim_start(leading_allow: &Vec<char>, text: &str, output: &mut String) {
     output.clear();
     output.push_str(text.trim_start_matches(|c: char| {
         !c.is_alphanumeric() && !leading_allow.contains(&c)
@@ -59,9 +61,13 @@ impl<'a> TokenStream for OuterPunctuationFilterTokenStream<'a> {
         // trim the end of token text
         trim_end(&self.tail.token().text, &mut self.buffer);
         mem::swap(&mut self.tail.token_mut().text, &mut self.buffer);
-        
+
         // trim start of the token text
-        trim_start(&self.leading_allow, &self.tail.token().text, &mut self.buffer);
+        trim_start(
+            &self.leading_allow,
+            &self.tail.token().text,
+            &mut self.buffer,
+        );
         mem::swap(&mut self.tail.token_mut().text, &mut self.buffer);
         true
     }
@@ -77,8 +83,8 @@ impl<'a> TokenStream for OuterPunctuationFilterTokenStream<'a> {
 
 #[cfg(test)]
 pub mod tests {
-    use tantivy::tokenizer::{TextAnalyzer, Token, WhitespaceTokenizer};
     use super::OuterPunctuationFilter;
+    use tantivy::tokenizer::{TextAnalyzer, Token, WhitespaceTokenizer};
 
     /// This is a function that can be used in tests and doc tests
     /// to assert a token's correctness.
@@ -139,5 +145,3 @@ pub mod tests {
         tokens
     }
 }
-
-

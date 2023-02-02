@@ -3,12 +3,12 @@ use tantivy as tv;
 
 mod document;
 mod facet;
+mod filters;
 mod index;
 mod query;
 mod schema;
 mod schemabuilder;
 mod searcher;
-mod filters;
 //mod OuterPunctuationFilter;
 //mod PossessiveContractionFilter;
 

@@ -1,18 +1,18 @@
 #![allow(clippy::new_ret_no_self)]
 
 use pyo3::{exceptions, prelude::*, types::PyAny};
-use tv::tokenizer::{TextAnalyzer, WhitespaceTokenizer, StopWordFilter};
+use tv::tokenizer::{StopWordFilter, TextAnalyzer, WhitespaceTokenizer};
 
 use crate::{
     document::{extract_value, Document},
+    filters::get_stopwords_filter_en,
+    filters::outer_punctuation_filter::OuterPunctuationFilter,
+    filters::possessive_contraction_filter::PossessiveContractionFilter,
     get_field,
     query::Query,
     schema::Schema,
     searcher::Searcher,
     to_pyerr,
-    filters::outer_punctuation_filter::OuterPunctuationFilter,
-    filters::possessive_contraction_filter::PossessiveContractionFilter,
-    filters::get_stopwords_filter_en,
 };
 use tantivy as tv;
 use tantivy::{
@@ -183,12 +183,11 @@ impl Index {
     fn open(path: &str) -> PyResult<Index> {
         let index = tv::Index::open_in_dir(path).map_err(to_pyerr)?;
         let kapiche_tokenizer = get_kapiche_tokenizer();
-        index.tokenizers()
+        index
+            .tokenizers()
             .register("kapiche_tokenizer", kapiche_tokenizer);
 
-        let reader = index
-            .reader()
-            .map_err(to_pyerr)?;
+        let reader = index.reader().map_err(to_pyerr)?;
         Ok(Index { index, reader })
     }
 
@@ -213,7 +212,8 @@ impl Index {
         };
 
         let kapiche_tokenizer = get_kapiche_tokenizer();
-        index.tokenizers()
+        index
+            .tokenizers()
             .register("kapiche_tokenizer", kapiche_tokenizer);
 
         let reader = index.reader().map_err(to_pyerr)?;

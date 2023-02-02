@@ -1,22 +1,24 @@
 use std::mem;
 
-use tantivy::tokenizer::{Token, TokenFilter, TokenStream};
-use tantivy::tokenizer::BoxTokenStream;
 use crate::filters::filter_constants::CONTRACTION_PATTERNS;
+use tantivy::tokenizer::BoxTokenStream;
+use tantivy::tokenizer::{Token, TokenFilter, TokenStream};
 
 //    Removes possessive contractions from tokens.
 //    Is fairly robust in that is uses all know unicode apostrophe characters except U+02EE. See
 //    `https://en.wikipedia.org/wiki/Apostrophe#Unicode`_.
- 
 
 #[derive(Clone)]
 pub struct PossessiveContractionFilter;
 
 impl TokenFilter for PossessiveContractionFilter {
-    fn transform<'a>(&self, token_stream: BoxTokenStream<'a>) -> BoxTokenStream<'a> {
+    fn transform<'a>(
+        &self,
+        token_stream: BoxTokenStream<'a>,
+    ) -> BoxTokenStream<'a> {
         BoxTokenStream::from(PossessiveContractionFilterTokenStream {
             tail: token_stream,
-            buffer: String::with_capacity(100)
+            buffer: String::with_capacity(100),
         })
     }
 }
@@ -29,22 +31,24 @@ pub struct PossessiveContractionFilterTokenStream<'a> {
 
 // Creates desired string with possessive contractions substituted in the output string.
 // Returns Tru if replacements were made, false otherwise.
-pub fn replace_possessive_contractions(text: &str, output: &mut String) -> bool {
+pub fn replace_possessive_contractions(
+    text: &str,
+    output: &mut String,
+) -> bool {
     output.clear();
     let mut replaced = false;
     let mut temp = String::from(text);
-    for pat in CONTRACTION_PATTERNS{
-        if temp.contains(pat){
+    for pat in CONTRACTION_PATTERNS {
+        if temp.contains(pat) {
             temp = temp.replace(pat, "");
             replaced = true
-            }
         }
+    }
     if replaced {
         output.push_str(&temp);
     }
-    return replaced
-    }
-
+    return replaced;
+}
 
 impl<'a> TokenStream for PossessiveContractionFilterTokenStream<'a> {
     fn advance(&mut self) -> bool {
@@ -53,7 +57,10 @@ impl<'a> TokenStream for PossessiveContractionFilterTokenStream<'a> {
             return false;
         }
         // replace possessive contractions if there are substritutions
-        if replace_possessive_contractions(&self.tail.token().text, &mut self.buffer){
+        if replace_possessive_contractions(
+            &self.tail.token().text,
+            &mut self.buffer,
+        ) {
             mem::swap(&mut self.tail.token_mut().text, &mut self.buffer);
         }
         true
@@ -81,9 +88,10 @@ mod tests {
         assert_eq!(tokens.len(), 1);
         assert_token(&tokens[0], 0, "goku", 0, 6);
 
-        let tokens = token_stream_helper("your\u{2019}s mcdonald\u{02BC}s bee's");
+        let tokens =
+            token_stream_helper("your\u{2019}s mcdonald\u{02BC}s bee's");
         assert_eq!(tokens.len(), 3);
-        
+
         assert_token(&tokens[0], 0, "your", 0, 8);
         assert_token(&tokens[1], 1, "mcdonald", 9, 20);
         assert_token(&tokens[2], 2, "bee", 21, 26);
