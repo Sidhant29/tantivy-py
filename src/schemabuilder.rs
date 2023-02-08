@@ -226,7 +226,29 @@ impl SchemaBuilder {
     ) -> PyResult<Self> {
         let builder = &mut self.builder;
 
-        let opts = SchemaBuilder::build_numeric_option(stored, indexed, fast)?;
+        let mut opts = DateOptions::default();
+        if stored {
+            opts = opts.set_stored();
+        }
+        if indexed {
+            opts = opts.set_indexed();
+        }
+        let cardinality = match fast {
+            Some(f) => {
+                let f = f.to_lowercase();
+                match f.as_ref() {
+                    "single" => Some(schema::Cardinality::SingleValue),
+                    "multi" => Some(schema::Cardinality::MultiValues),
+                    _ => return Err(exceptions::PyValueError::new_err(
+                        "Invalid index option, valid choices are: 'multivalue' and 'singlevalue'"
+                    )),
+                }
+            }
+            None => None,
+        };
+        if fast.is_some(){
+            opts = opts.set_fast(cardinality.unwrap());
+        };
 
         if let Some(builder) = builder.write().unwrap().as_mut() {
             builder.add_date_field(name, opts);

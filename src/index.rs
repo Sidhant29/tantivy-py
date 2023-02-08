@@ -3,7 +3,6 @@
 use std::collections::HashMap;
 
 use pyo3::{exceptions, prelude::*, types::PyAny};
-use tv::tokenizer::{StopWordFilter, TextAnalyzer, WhitespaceTokenizer};
 
 use crate::{
     document::{extract_value, Document},
@@ -20,7 +19,16 @@ use tantivy as tv;
 use tantivy::{
     directory::MmapDirectory,
     schema::{NamedFieldDocument, Term, Value},
-    tokenizer::{Language, LowerCaser, RemoveLongFilter, SimpleTokenizer, Stemmer, TextAnalyzer},
+    tokenizer::{
+        Language,
+        LowerCaser,
+        RemoveLongFilter,
+        SimpleTokenizer,
+        Stemmer,
+        StopWordFilter,
+        TextAnalyzer,
+        WhitespaceTokenizer,
+    },
 };
 
 const RELOAD_POLICY: &str = "commit";
