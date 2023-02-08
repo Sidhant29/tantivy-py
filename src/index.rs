@@ -20,14 +20,8 @@ use tantivy::{
     directory::MmapDirectory,
     schema::{NamedFieldDocument, Term, Value},
     tokenizer::{
-        Language,
-        LowerCaser,
-        RemoveLongFilter,
-        SimpleTokenizer,
-        Stemmer,
-        StopWordFilter,
-        TextAnalyzer,
-        WhitespaceTokenizer,
+        Language, LowerCaser, RemoveLongFilter, SimpleTokenizer, Stemmer,
+        StopWordFilter, TextAnalyzer, WhitespaceTokenizer,
     },
 };
 
@@ -202,7 +196,6 @@ impl Index {
         index
             .tokenizers()
             .register("kapiche_tokenizer", kapiche_tokenizer);
-
 
         let reader = index.reader().map_err(to_pyerr)?;
         Ok(Index { index, reader })

@@ -6,7 +6,7 @@ use tantivy::schema;
 
 use crate::schema::Schema;
 use std::sync::{Arc, RwLock};
-use tantivy::schema::{INDEXED, DateOptions };
+use tantivy::schema::{DateOptions, INDEXED};
 
 /// Tantivy has a very strict schema.
 /// You need to specify in advance whether a field is indexed or not,
@@ -246,7 +246,7 @@ impl SchemaBuilder {
             }
             None => None,
         };
-        if fast.is_some(){
+        if fast.is_some() {
             opts = opts.set_fast(cardinality.unwrap());
         };
 
