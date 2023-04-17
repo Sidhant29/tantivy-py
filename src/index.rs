@@ -131,7 +131,8 @@ impl IndexWriter {
         field_value: &PyAny,
     ) -> PyResult<u64> {
         let field = get_field(&self.schema, field_name)?;
-        let field_value_type = self.schema.get_field_entry(field).field_type().value_type();
+        let field_value_type =
+            self.schema.get_field_entry(field).field_type().value_type();
         let term = match field_value_type {
             Type::U64 => {
                 let value: u64 = field_value.extract::<u64>()?;
