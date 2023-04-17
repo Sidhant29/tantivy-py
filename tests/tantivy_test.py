@@ -302,7 +302,7 @@ class TestClass(object):
         searched_doc = index.searcher().doc(doc_address)
         assert searched_doc["title"] == ["The Old Man and the Sea"]
 
-    def test_simple_search_in_kapiche_ram(self, ram_kapiche_index):
+    def test_delete_documents_kapiche(self, ram_kapiche_index):
         index = ram_kapiche_index
         query = index.parse_query("id:1 id:2 id:3")
 

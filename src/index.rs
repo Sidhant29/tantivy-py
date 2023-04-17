@@ -3,10 +3,9 @@
 use pyo3::{
     exceptions,
     prelude::*,
-    types::{ PyAny, PyDateTime, PyDateAccess, PyTimeAccess, PyInt },
+    types::{PyAny, PyDateAccess, PyDateTime, PyInt, PyTimeAccess},
 };
 
-use chrono::{offset::TimeZone, Utc};
 use crate::facet::Facet;
 use crate::{
     document::{extract_value, Document},
@@ -20,10 +19,12 @@ use crate::{
     searcher_frame_document::StatSearcher,
     to_pyerr,
 };
+
+use chrono::{offset::TimeZone, Utc};
 use tantivy as tv;
 use tantivy::{
     directory::MmapDirectory,
-    schema::{NamedFieldDocument, Term, Value, Type},
+    schema::{NamedFieldDocument, Term, Type, Value},
     tokenizer::{
         Language, LowerCaser, RemoveLongFilter, SimpleTokenizer, Stemmer,
         StopWordFilter, TextAnalyzer, WhitespaceTokenizer,
